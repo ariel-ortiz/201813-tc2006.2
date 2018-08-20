@@ -31,6 +31,21 @@
     [(/ (+ t1 t2) t3)
      (/ (- t1 t2) t3)]))
 
+(defn bmi
+  "Computes the body mass index of a person."
+  [weight height]
+  (let [BMI (/ weight (expt height 2))]
+    (if (< BMI 20)
+      'underweight
+      (if (< BMI 25)
+        'normal
+        (if (< BMI 30)
+          'obese1
+          (if (< BMI 40)
+            'obese2
+            'obese3))))))
+
+
 (deftest test-f2c
   (is (= 100.0 (f2c 212.0)))
   (is (= 0.0 (f2c 32.0)))
@@ -50,5 +65,12 @@
   (is (= [-1 -1] (roots 2 4 2)))
   (is (= [0 0] (roots 1 0 0)))
   (is (= [-1/4 -1] (roots 4 5 1))))
+
+(deftest test-bmi
+  (is (= 'underweight (bmi 45 1.7)))
+  (is (= 'normal (bmi 55 1.5)))
+  (is (= 'obese1 (bmi 76 1.7)))
+  (is (= 'obese2 (bmi 81 1.6)))
+  (is (= 'obese3 (bmi 120 1.6))))
 
 (run-tests)
