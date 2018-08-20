@@ -35,16 +35,61 @@
   "Computes the body mass index of a person."
   [weight height]
   (let [BMI (/ weight (expt height 2))]
-    (if (< BMI 20)
-      'underweight
-      (if (< BMI 25)
-        'normal
-        (if (< BMI 30)
-          'obese1
-          (if (< BMI 40)
-            'obese2
-            'obese3))))))
+    (cond
+      (< BMI 20) 'underweight
+      (< BMI 25) 'normal
+      (< BMI 30) 'obese1
+      (< BMI 40) 'obese2
+      :else      'obese3)))
 
+(defn fact
+  "Computes the factorial of n."
+  [n]
+  (if (< n 2)
+    1
+    (*' n (fact (dec n)))))
+
+(defn fact-loop
+  "Computes the factorial of n using loop/recur."
+  [n]
+  (loop [i      1
+         result 1]
+    (if (> i n)
+      result
+      (recur (inc i) (* result i)))))
+
+(def zero ())
+(defn is-zero [n] (= n zero))
+(defn add1 [n] (cons () n))
+(defn sub1 [n] (rest n))
+
+(defn add
+  [a b]
+  (if (is-zero a)
+    b
+    (add1 (add (sub1 a) b))))
+
+(defn sub
+  [a b] ;;; a >= b
+  (if (is-zero b)
+    a
+    (sub1 (sub a (sub1 b)))))
+
+(defn mul
+  [a b]
+  (if (is-zero a)
+    zero
+    (add b (mul (sub1 a) b))))
+
+(defn is-less
+  [a b]
+  (if (is-zero a)
+    (if (is-zero b)
+      false
+      true)
+    (if (is-zero b)
+      false
+      (is-less (sub1 a) (sub1 b)))))
 
 (deftest test-f2c
   (is (= 100.0 (f2c 212.0)))
@@ -72,5 +117,17 @@
   (is (= 'obese1 (bmi 76 1.7)))
   (is (= 'obese2 (bmi 81 1.6)))
   (is (= 'obese3 (bmi 120 1.6))))
+
+(deftest test-fact
+  (is (= 1 (fact 0)))
+  (is (= 1 (fact 1)))
+  (is (= 6 (fact 3)))
+  (is (= 120 (fact 5))))
+
+(deftest test-fact-loop
+  (is (= 1 (fact-loop 0)))
+  (is (= 1 (fact-loop 1)))
+  (is (= 6 (fact-loop 3)))
+  (is (= 120 (fact-loop 5))))
 
 (run-tests)
