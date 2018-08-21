@@ -91,6 +91,28 @@
       false
       (is-less (sub1 a) (sub1 b)))))
 
+(defn delete
+  "Remove all occurrences of x in lst, which
+  might contain nested lists."
+  [x lst]
+  (cond
+    (empty? lst)
+    ()
+
+    (list? (first lst))
+    (conj
+      (delete x (rest lst))
+      (delete x (first lst)))
+
+
+    (= x (first lst))
+    (delete x (rest lst))
+
+    :else
+    (conj
+      (delete x (rest lst))
+      (first lst))))
+
 (deftest test-f2c
   (is (= 100.0 (f2c 212.0)))
   (is (= 0.0 (f2c 32.0)))
