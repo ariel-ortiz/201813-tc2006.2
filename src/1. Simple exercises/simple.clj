@@ -113,6 +113,50 @@
       (delete x (rest lst))
       (first lst))))
 
+(defn fib
+  "Return the n-th number of the Fibonacci sequence.
+  n should be a positive integer."
+  [n]
+  (if (< n 2)
+    n
+    (+' (fib (- n 1)) (fib (- n 2)))))
+
+(defn fib-loop
+  "Return the n-th number of the Fibonacci sequence.
+  n should be a positive integer. Implementes
+  using a loop/recur"
+  [n]
+  (loop [a 0
+         b 1
+         i 0]
+    (if (= i n)
+      a
+      (recur b (+' a b) (inc i)))))
+
+(defn duplicate
+  "Duplicates every element in lst."
+  [lst]
+  (if (empty? lst)
+    ()
+    (cons (first lst)
+          (cons (first lst)
+                (duplicate (rest lst))))))
+
+(defn duplicate-loop
+  "Duplicates every element in lst.
+  Uses loop/recur."
+  [lst]
+  (loop [lst    lst
+         result ()]
+    (if (empty? lst)
+      (reverse result)
+      (recur
+        (rest lst)
+        (cons (first lst)
+              (cons (first lst)
+                    result))))))
+
+
 (deftest test-f2c
   (is (= 100.0 (f2c 212.0)))
   (is (= 0.0 (f2c 32.0)))
