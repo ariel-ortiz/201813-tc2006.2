@@ -8,7 +8,9 @@
 (defn suffixes
   "Returns a list with all the possible suffixes of lst."
   [lst]
-  nil)
+  (if (empty? lst)
+    '(())
+    (cons lst (suffixes (rest lst)))))
 
 ;==========================================================
 (deftest test-suffixes

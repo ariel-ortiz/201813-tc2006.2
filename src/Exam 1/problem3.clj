@@ -9,7 +9,12 @@
   "Returns the equivalent decimal value of the series
   of binary digits contained in lst."
   [lst]
-  nil)
+  (loop [lst    lst
+         result 0]
+    (if (empty? lst)
+      result
+      (recur (rest lst) (+ (first lst)
+                           (* 2 result))))))
 
 ;==========================================================
 (deftest test-binary->decimal

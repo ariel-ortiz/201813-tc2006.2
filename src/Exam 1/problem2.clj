@@ -10,7 +10,11 @@
   start <= i <= end. The resulting list is in ascending
   order."
   [start end]
-  nil)
+  (loop [start (if (even? start) start (inc start))
+         result ()]
+    (if (> start end)
+      (reverse result)
+      (recur (+ start 2) (cons start result)))))
 
 ;==========================================================
 (deftest test-range-of-evens
