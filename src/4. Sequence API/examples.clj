@@ -18,7 +18,10 @@
   start <= i <= end. The resulting list is in ascending
   order."
   [start end]
-  (filter even? (range start (inc end))))
+  (->> end
+       inc
+       (range start)
+       (filter even?)))
 
 (defn list-of-symbols?
   "Returns true if all elements in lst are symbols,
@@ -71,6 +74,15 @@
                      (second %))
              (list %))
           lst))
+
+(defn binary
+  [n]
+  (->> [n ()]
+       (iterate (fn [[n result]]
+                  [(quot n 2) (cons (rem n 2) result)]))
+       (drop-while #(not (zero? (first %))))
+       first
+       second))
 
 ;==========================================================
 (deftest test-suffixes
