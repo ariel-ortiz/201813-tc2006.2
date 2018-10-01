@@ -33,6 +33,45 @@
   [lst]
   (map #(vector (second %) (first %)) lst))
 
+(defn pack
+  "Returns a list in which consecutive repeated elements
+  of lst are placed in separate sublists."
+  [lst]
+  (partition-by identity lst))
+
+(defn compress
+  "Returns a list in which consecutive repeated elements of
+  lst are replaced with a single copy of the element."
+  [lst]
+  (map first (pack lst)))
+
+(defn encode
+  "Returns a list in which consecutive duplicated elements of
+  lst are encoded as vectors [n e], where n is the number of
+  duplicates of the element e."
+  [lst]
+  (map #(vector (count %) (first %))
+       (pack lst)))
+
+(defn encode-modified
+  "Works the same as encode, but if an element has no duplicates
+  it is simply copied into the resulting list."
+  [lst]
+  (map #(if (= 1 (first %))
+          (second %)
+          %)
+       (encode lst)))
+
+(defn decode
+  "It returns the decoded version of lst, as created by the
+  function encode-modified."
+  [lst]
+  (mapcat #(if (vector? %)
+             (repeat (first %)
+                     (second %))
+             (list %))
+          lst))
+
 ;==========================================================
 (deftest test-suffixes
   (is (= '(())
@@ -103,6 +142,41 @@
     (invert-pairs '([a 1][a 2][b 1][b 2])))
   (is (= '([1 January][2 February][3 March])
         (invert-pairs '([January 1][February 2][March 3])))))
+
+(deftest test-pack
+  (is (= () (pack ())))
+  (is (= '((a a a a) (b) (c c) (a a) (d) (e e e e))
+        (pack '(a a a a b c c a a d e e e e))))
+  (is (= '((1) (2) (3) (4) (5)) (pack '(1 2 3 4 5))))
+  (is (= '((9 9 9 9 9 9 9 9 9)) (pack '(9 9 9 9 9 9 9 9 9)))))
+
+(deftest test-compress
+  (is (= () (compress ())))
+  (is (= '(a b c d) (compress '(a b c d))))
+  (is (= '(a b c a d e)
+        (compress '(a a a a b c c a a d e e e e))))
+  (is (= '(a) (compress '(a a a a a a a a a a)))))
+
+(deftest test-encode
+  (is (= () (encode ())))
+  (is (= '([4 a] [1 b] [2 c] [2 a] [1 d] [4 e])
+        (encode '(a a a a b c c a a d e e e e))))
+  (is (= '([1 1] [1 2] [1 3] [1 4] [1 5]) (encode '(1 2 3 4 5))))
+  (is (= '([9 9]) (encode '(9 9 9 9 9 9 9 9 9)))))
+
+(deftest test-encode-modified
+  (is (= () (encode-modified ())))
+  (is (= '([4 a] b [2 c] [2 a] d [4 e])
+        (encode-modified '(a a a a b c c a a d e e e e))))
+  (is (= '(1 2 3 4 5) (encode-modified '(1 2 3 4 5))))
+  (is (= '([9 9]) (encode-modified '(9 9 9 9 9 9 9 9 9)))))
+
+(deftest test-decode
+  (is (= () (decode ())))
+  (is (= '(a a a a b c c a a d e e e e)
+        (decode '([4 a] b [2 c] [2 a] d [4 e]))))
+  (is (= '(1 2 3 4 5) (decode '(1 2 3 4 5))))
+  (is (= '(9 9 9 9 9 9 9 9 9) (decode '([9 9])))))
 
 ;==========================================================
 (run-tests)
