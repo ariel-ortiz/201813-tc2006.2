@@ -77,12 +77,35 @@
 
 (defn binary
   [n]
+  "Returns the binary representation of n as a list of
+  0 and 1 digits."
   (->> [n ()]
        (iterate (fn [[n result]]
                   [(quot n 2) (cons (rem n 2) result)]))
        (drop-while #(not (zero? (first %))))
        first
        second))
+
+(defn prime-factors
+  "Returns a list with the prime factors of n."
+  [n]
+  (->> [n 2 ()]
+       (iterate (fn [[n prime result]]
+                  (if (zero? (rem n prime))
+                    [(quot n prime) prime (cons prime result)]
+                    [n (inc prime) result])))
+       (drop-while (fn [[n _ _]] (not= n 1)))
+       first
+       last
+       reverse))
+
+;;; Example of using the for macro to compute a cartesian product.
+(for [a (range 1 100)
+      b (range 1 100)
+      c (range 1 100)
+      :when (< a b c)
+      :when (= (* c c) (+ (* a a) (* b b)))]
+  [a b c])
 
 ;==========================================================
 (deftest test-suffixes
@@ -189,6 +212,13 @@
         (decode '([4 a] b [2 c] [2 a] d [4 e]))))
   (is (= '(1 2 3 4 5) (decode '(1 2 3 4 5))))
   (is (= '(9 9 9 9 9 9 9 9 9) (decode '([9 9])))))
+
+(deftest test-prime-factors
+  (is (= () (prime-factors 1)))
+  (is (= '(2 3) (prime-factors 6)))
+  (is (= '(2 2 2 2 2 3) (prime-factors 96)))
+  (is (= '(97) (prime-factors 97)))
+  (is (= '(2 3 3 37) (prime-factors 666))))
 
 ;==========================================================
 (run-tests)
