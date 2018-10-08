@@ -107,6 +107,25 @@
       :when (= (* c c) (+ (* a a) (* b b)))]
   [a b c])
 
+(defn pow2-producer
+  "Produces an infinite lazy sequence of powers of 2."
+  [n]
+  (lazy-seq (cons n (pow2-producer (*' n 2)))))
+
+;;; The infinite lazy sequence of powers of 2.
+(def pow2 (pow2-producer 1))
+
+(defn prime-producer
+  "Produces an infinite lazy sequence of prime numbers using
+  the Sieve of Eratosthenes algorithm."
+  [lst]
+  (lazy-seq (cons (first lst)
+                  (prime-producer
+                    (remove #(zero? (rem % (first lst))) lst)))))
+
+;;; The infinite lazy sequence of primer numbers.
+(def prime (prime-producer (iterate inc 2)))
+
 ;==========================================================
 (deftest test-suffixes
   (is (= '(())
