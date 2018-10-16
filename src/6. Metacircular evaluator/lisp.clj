@@ -9,7 +9,7 @@
 
   (invoke
     [self args]
-    ($eval body (merge env (zipmap params args))))
+    ($eval body (merge @env (zipmap params args))))
 
   (applyTo
     [self args]
@@ -28,7 +28,7 @@
   [expr env]
   (cond
 
-    ; 1. Variable referebces
+    ; 1. Variable references
     (symbol? expr)
     (if (contains? env expr)
       (get env expr)
@@ -50,7 +50,13 @@
         ($eval (fourth expr) env))
 
       lambda
-      (->Closure env (second expr) (third expr))
+      (->Closure (atom env) (second expr) (third expr))
+
+      label
+      (let [closure ($eval (third expr) env)]
+        (swap! (.env closure)
+               #(assoc % (second expr) closure))
+        closure)
 
       ; default clause: function invocation
       (apply ($eval (first expr) env)
@@ -59,3 +65,25 @@
     ; 3. Everything else evaluates to itself
     :else
     expr))
+
+(def globals {'EQ   =
+              'CAR  first
+              'CDR  rest
+              'CONS cons
+              'ATOM #(or (= % ()) (not (list? %)))
+              '*    *
+              '+    +})
+
+($eval '((lambda (f x) (f (f x)))
+         (lambda (x) (* x 2))
+         10)
+       globals)
+
+($eval '((label DUP (lambda (lst)
+                      (if (EQ lst ())
+                        ()
+                        (CONS (CAR lst)
+                              (CONS (CAR lst)
+                                    (DUP (CDR lst)))))))
+         (quote (A B C)))
+        globals)
