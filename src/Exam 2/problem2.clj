@@ -1,15 +1,26 @@
 ;==========================================================
-; Type your student ID and name here.
+; Solution to problem 2.
 ;==========================================================
 
 (use 'clojure.test)
+
+(defn single-look-and-say
+  [lst]
+  (mapcat
+    #(list (count %) (first %))
+    (partition-by identity lst)))
 
 ;==========================================================
 (defn look-and-say
   "Returns the n-th element of the look-and-say sequence
   as a list of digits."
   [n]
-  nil)
+  (->>
+    (iterate
+      single-look-and-say
+      '(1))
+    (drop n)
+    first))
 
 ;==========================================================
 (deftest test-look-and-say
@@ -45,7 +56,7 @@
             2 1 1 2 1 3 2 2 3 1 1 2 1 1 1 3
             1 2 2 1 1 3 3 2 2 1 1 3 1 1 1 2
             2 1 1 3 1 2 2 1)
-         (look-and-say 20))))
+        (look-and-say 20))))
 
 ;==========================================================
 (run-tests)

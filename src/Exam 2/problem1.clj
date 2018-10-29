@@ -1,5 +1,5 @@
 ;==========================================================
-; Type your student ID and name here.
+; Solution to problem 1.
 ;==========================================================
 
 (use 'clojure.test)
@@ -11,7 +11,7 @@
   in lst is an even number, the parity bit should be 0, 
   otherwise the parity bit should be 1."
   [lst]
-  nil)
+  (cons (rem (reduce + lst) 2) lst))
 
 ;==========================================================
 (deftest test-partity-even

@@ -1,8 +1,9 @@
 ;==========================================================
-; Type your student ID and name here.
+; Solution to problem 3.
 ;==========================================================
 
 (use 'clojure.test)
+(use 'clojure.math.numeric-tower)
 
 ;==========================================================
 (defn concat-repeat-num
@@ -11,7 +12,10 @@
   then n concatenated three times, and so on, to infinity
   and beyond."
   [n]
-  nil)
+  (let [shift (expt 10 (count (str n)))]
+    (iterate
+      #(+' (*' % shift) n)
+      n)))
 
 ;==========================================================
 (deftest test-concat-repeat-num

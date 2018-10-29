@@ -1,5 +1,5 @@
 ;==========================================================
-; Type your student ID and name here.
+; Solution to problem 4.
 ;==========================================================
 
 (use 'clojure.test)
@@ -66,7 +66,20 @@
       (let [lambda-expr ($eval (third expr) env)]
         (swap! (.env lambda-expr)
                #(assoc % (second expr) lambda-expr))
-        lambda-expr)      
+        lambda-expr)
+
+      let ; expr is a "let" special form
+      (let [let-var  (first (second expr))
+            let-expr (second (second expr))
+            let-body (third expr)]
+        ($eval
+          (list
+            (list
+              'lambda
+              (list let-var)
+              let-body)
+            let-expr)
+          env))
 
       ; else, expr is a function invocation
       (apply ($eval (first expr) env)
@@ -180,6 +193,11 @@
 (deftest test-let
   (is (= 7
          ($eval '(let (a 7) a) {})))
+  (is (= 2
+         ($eval '(let (x 5)
+                   (let (x 2)
+                     x))
+                {})))
   (is (= 42
          ($eval '(let (x 6)
                    (* 7 x))
